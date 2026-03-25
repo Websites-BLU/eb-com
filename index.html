@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const NAV_ITEMS = [
   { id: "home", label: "ראשי", icon: "home" },
@@ -232,28 +232,27 @@ function Icon({ name, className = "h-4 w-4" }) {
 function SectionTitle({ eyebrow, title, text }) {
   return (
     <div className="max-w-3xl">
-      <div className="text-sm font-medium text-emerald-700">{eyebrow}</div>
-      <h2 className="mt-3 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">{title}</h2>
-      {text ? <p className="mt-4 text-lg leading-8 text-stone-600">{text}</p> : null}
+      <div className="text-sm text-orange-300">{eyebrow}</div>
+      <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h2>
+      {text ? <p className="mt-4 text-lg leading-8 text-white/70">{text}</p> : null}
     </div>
   );
 }
 
 function Card({ title, text, icon }) {
   return (
-    <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+    <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/20 backdrop-blur">
       {icon ? (
-        <div className="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+        <div className="mb-4 inline-flex rounded-2xl border border-orange-400/20 bg-orange-500/10 p-3 text-orange-300">
           <Icon name={icon} className="h-5 w-5" />
         </div>
       ) : null}
-      <div className="text-lg font-semibold text-stone-900">{title}</div>
-      <p className="mt-3 leading-8 text-stone-600">{text}</p>
+      <div className="text-lg font-semibold">{title}</div>
+      <p className="mt-3 leading-8 text-white/70">{text}</p>
     </div>
   );
 }
 
-// Fixed the syntax error in this component
 function SchemaScripts({ schemas }) {
   useEffect(() => {
     const nodes = schemas.map((schema, i) => {
@@ -284,66 +283,13 @@ function SiteTests() {
   return null;
 }
 
-export default function App() {
+export default function EladBlochHebrewSite() {
   const [activeTab, setActiveTab] = useState("home");
+
   const baseUrl = "https://eladbloch.com";
 
-  // Added scroll listener to update active tab automatically
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = NAV_ITEMS.map((item) => document.getElementById(item.id));
-      const scrollPosition = window.scrollY + 200; // Offset for header
-
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const section = sections[i];
-        if (section && section.offsetTop <= scrollPosition) {
-          if (activeTab !== section.id) {
-            setActiveTab(section.id);
-          }
-          break;
-        }
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [activeTab]);
-
   const personSchema = useMemo(
-    () => ({
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "@id": `${baseUrl}/#person`,
-      name: "אלעד בלוך",
-      alternateName: "Elad Bloch",
-      url: baseUrl,
-      image: `${baseUrl}/profile.jpg`,
-      telephone: "052-8699412",
-      jobTitle: "איש טיפול, אח במקצועו ומנהל בית בגלבוע",
-      description:
-        "אלעד בלוך הוא איש טיפול, אח במקצועו ומנהל בית בגלבוע במירב. עוסק בליווי נשים בעלות צרכים מיוחדים, שיקום בקהילה ובניית מסגרות חיים תומכות.",
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "מירב",
-        addressRegion: "הגלבוע",
-        addressCountry: "IL",
-      },
-      areaServed: "ישראל",
-      knowsAbout: [
-        "שיקום בקהילה",
-        "ליווי נשים בעלות צרכים מיוחדים",
-        "קהילה טיפולית",
-        "העצמה אישית",
-        "ליווי משפחות",
-      ],
-      sameAs: [
-        "https://www.kdati.org.il/magazines/0423/17-16/",
-        "https://emek.mynet.co.il/local_news/article/m_217090",
-        "https://103fm.maariv.co.il/programs/media.aspx?ZrqvnVq=ELEGJJ&c41t4nzVQ=EF"
-      ]
-    }),
-    []
-  );
+    () =>
 
   const faqSchema = useMemo(
     () => ({
@@ -396,29 +342,27 @@ export default function App() {
   }), []);
 
   return (
-    <div className="min-h-screen bg-stone-50 text-stone-900 font-sans" dir="rtl">
+    <div className="min-h-screen bg-neutral-950 text-white" dir="rtl">
       <SchemaScripts schemas={[personSchema, faqSchema, websiteSchema, breadcrumbSchema]} />
       <SiteTests />
 
-      {/* Soft background accents instead of neon */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 h-96 w-96 rounded-full bg-emerald-100/50 blur-3xl" />
-        <div className="absolute bottom-0 left-0 h-[32rem] w-[32rem] rounded-full bg-stone-200/50 blur-3xl" />
+        <div className="absolute top-0 right-0 h-96 w-96 rounded-full bg-orange-500/10 blur-3xl" />
+        <div className="absolute bottom-0 left-0 h-[32rem] w-[32rem] rounded-full bg-white/5 blur-3xl" />
       </div>
 
       <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row">
-        {/* Sidebar */}
-        <aside className="border-b border-stone-200 bg-stone-50/90 px-5 py-5 backdrop-blur lg:sticky lg:top-0 lg:h-screen lg:w-80 lg:border-b-0 lg:border-l lg:px-6 lg:py-8 z-10">
-          <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-            <div className="text-2xl font-bold text-stone-900">אלעד בלוך</div>
-            <div className="mt-2 text-sm leading-7 text-stone-600">איש טיפול, אח במקצועו ומנהל בית בגלבוע</div>
-            <div className="mt-4 flex items-center gap-2 text-sm text-emerald-700 font-medium">
+        <aside className="border-b border-white/10 bg-neutral-950/80 px-5 py-5 backdrop-blur lg:sticky lg:top-0 lg:h-screen lg:w-80 lg:border-b-0 lg:border-l lg:px-6 lg:py-8">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+            <div className="text-2xl font-semibold">אלעד בלוך</div>
+            <div className="mt-2 text-sm leading-7 text-white/60">איש טיפול, אח במקצועו ומנהל בית בגלבוע</div>
+            <div className="mt-4 flex items-center gap-2 text-sm text-orange-300">
               <Icon name="map" className="h-4 w-4" />
               <span>מירב, הגלבוע</span>
             </div>
             <a
               href="tel:0528699412"
-              className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-emerald-700 px-4 py-3 text-sm font-medium text-white shadow-md shadow-emerald-700/20 transition hover:bg-emerald-800"
+              className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-orange-500 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-orange-500/20"
             >
               <Icon name="phone" className="h-4 w-4" />
               052-8699412
@@ -436,8 +380,8 @@ export default function App() {
                     const el = document.getElementById(item.id);
                     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                   }}
-                  className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-right text-sm font-medium transition ${
-                    active ? "bg-emerald-700 text-white shadow-md" : "bg-transparent text-stone-600 hover:bg-stone-200 hover:text-stone-900"
+                  className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-right text-sm transition ${
+                    active ? "bg-white text-neutral-950" : "bg-white/5 text-white/75 hover:bg-white/10 hover:text-white"
                   }`}
                 >
                   <Icon name={item.icon} className="h-4 w-4 shrink-0" />
@@ -447,25 +391,24 @@ export default function App() {
             })}
           </nav>
 
-          <div className="mt-6 rounded-3xl border border-emerald-100 bg-emerald-50 p-5">
-            <div className="text-sm font-semibold text-emerald-800">מטרת האתר</div>
-            <p className="mt-3 text-sm leading-7 text-emerald-700/80">
+          <div className="mt-6 rounded-3xl border border-white/10 bg-white/5 p-5">
+            <div className="text-sm text-orange-300">מטרת האתר</div>
+            <p className="mt-3 text-sm leading-7 text-white/70">
               לבסס נוכחות דיגיטלית ברורה, מכבדת וסמכותית סביב השם אלעד בלוך, בהקשר של טיפול, שיקום, קהילה ובית בגלבוע.
             </p>
           </div>
         </aside>
 
-        {/* Main Content */}
-        <main className="flex-1 px-6 py-8 lg:px-12 lg:py-12">
-          <section id="home" className="scroll-mt-24 border-b border-stone-200 pb-16">
-            <div className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700">
+        <main className="flex-1 px-6 py-8 lg:px-10 lg:py-10">
+          <section id="home" className="scroll-mt-24 border-b border-white/10 pb-16">
+            <div className="inline-flex rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-2 text-sm text-orange-300">
               טיפול, שיקום, קהילה וחיים מלווים
             </div>
-            <h1 className="mt-6 max-w-5xl text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl text-stone-900">
+            <h1 className="mt-6 max-w-5xl text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">
               אלעד בלוך,
-              <span className="text-emerald-700"> איש טיפול, אח במקצועו ומנהל בית בגלבוע</span>
+              <span className="text-orange-400"> איש טיפול, אח במקצועו ומנהל בית בגלבוע</span>
             </h1>
-            <p className="mt-6 max-w-4xl text-lg leading-8 text-stone-600">
+            <p className="mt-6 max-w-4xl text-lg leading-8 text-white/75">
               אתר זה מציג את העשייה של אלעד בלוך בהקשר של טיפול, שיקום וליווי נשים בעלות צרכים מיוחדים, מתוך תפיסה קהילתית, מקצועית ואנושית. המוקד כאן הוא בית בגלבוע, בית לחיים, תהליכי התפתחות, שייכות, עבודה, סדר יום ויציבות לאורך זמן.
             </p>
 
@@ -476,7 +419,7 @@ export default function App() {
             </div>
           </section>
 
-          <section id="about" className="scroll-mt-24 border-b border-stone-200 py-16">
+          <section id="about" className="scroll-mt-24 border-b border-white/10 py-16">
             <SectionTitle
               eyebrow="אודות"
               title="מקצוע טיפולי, אחריות יומיומית וראייה קהילתית רחבה"
@@ -502,15 +445,15 @@ export default function App() {
             </div>
           </section>
 
-          <section id="gilboa" className="scroll-mt-24 border-b border-stone-200 py-16">
+          <section id="gilboa" className="scroll-mt-24 border-b border-white/10 py-16">
             <SectionTitle
               eyebrow="בית בגלבוע"
               title="מסגרת חיים קהילתית לנשים בעלות צרכים מיוחדים, בלב הגלבוע"
               text="בית בגלבוע מציע מרחב חיים שבו טיפול, עבודה, קהילה, בית וסדר יום נפגשים לכדי מכלול אחד. לא מדובר רק במקום מגורים, אלא במסגרת תומכת שמבקשת לאפשר חיים מלאים, יחס אישי, התפתחות, שייכות ויציבות בתוך קהילה חיה."
             />
 
-            <div className="mt-8 rounded-[2rem] border border-stone-200 bg-stone-100 p-8 lg:p-10 shadow-inner">
-              <p className="text-lg leading-8 text-stone-700">
+            <div className="mt-8 rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/8 to-white/3 p-8 lg:p-10">
+              <p className="text-lg leading-8 text-white/75">
                 מתוך החומרים הציבוריים על המקום עולה תפיסה שיקומית המבקשת לחבר בין עצמאות מלווה ומותאמת לבין ליווי רציף. לאורך השנים, סביב בית בגלבוע, עלו גם שאלות עומק של שינוי צרכים, הזדקנות, תמיכה רפואית, מענה רגשי וחוסן קהילתי. אלה בדיוק התחומים שבהם נדרשת נוכחות של איש טיפול שמבין מורכבות, תהליך ואנשים.
               </p>
               <div className="mt-8 grid gap-5 md:grid-cols-3">
@@ -521,7 +464,7 @@ export default function App() {
             </div>
           </section>
 
-          <section id="care" className="scroll-mt-24 border-b border-stone-200 py-16">
+          <section id="care" className="scroll-mt-24 border-b border-white/10 py-16">
             <SectionTitle
               eyebrow="תחומי עיסוק"
               title="ליווי, שיקום, סדר יום, משפחות וחיי קהילה"
@@ -535,7 +478,7 @@ export default function App() {
             </div>
           </section>
 
-          <section id="articles" className="scroll-mt-24 border-b border-stone-200 py-16">
+          <section id="articles" className="scroll-mt-24 border-b border-white/10 py-16">
             <SectionTitle
               eyebrow="מאמרים"
               title="תוכן עומק שמחזק סמכות, אמון והבנה מקצועית"
@@ -544,18 +487,16 @@ export default function App() {
 
             <div className="mt-10 grid gap-5 lg:grid-cols-3">
               {articles.map((item) => (
-                <div key={item.title} className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm flex flex-col h-full">
-                  <div className="text-xl font-bold text-stone-900">{item.title}</div>
-                  <p className="mt-4 leading-8 text-stone-600 flex-grow">{item.summary}</p>
-                  <button className="mt-6 rounded-2xl bg-stone-100 px-4 py-2 text-sm font-medium text-stone-800 transition hover:bg-stone-200 self-start">
-                    קרא מאמר
-                  </button>
+                <div key={item.title} className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                  <div className="text-xl font-semibold">{item.title}</div>
+                  <p className="mt-4 leading-8 text-white/70">{item.summary}</p>
+                  <button className="mt-5 rounded-2xl border border-white/15 px-4 py-2 text-sm text-white/85">קרא מאמר</button>
                 </div>
               ))}
             </div>
           </section>
 
-          <section id="media" className="scroll-mt-24 border-b border-stone-200 py-16">
+          <section id="media" className="scroll-mt-24 border-b border-white/10 py-16">
             <SectionTitle
               eyebrow="מקורות ומדיה"
               title="אזכורים חיצוניים שמחזקים אמינות, נראות וחיבור ציבורי"
@@ -569,19 +510,19 @@ export default function App() {
                   href={item.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:border-emerald-500 hover:shadow-md block h-full"
+                  className="rounded-3xl border border-white/10 bg-white/5 p-6 transition hover:border-white/20 hover:bg-white/[0.07]"
                 >
                   <div className="flex items-start justify-between gap-4">
-                    <div className="text-lg font-bold text-stone-900">{item.title}</div>
-                    <Icon name="external" className="mt-1 h-4 w-4 shrink-0 text-emerald-600" />
+                    <div className="text-lg font-semibold">{item.title}</div>
+                    <Icon name="external" className="mt-1 h-4 w-4 shrink-0 text-orange-300" />
                   </div>
-                  <p className="mt-4 leading-7 text-stone-600">{item.text}</p>
+                  <p className="mt-4 leading-8 text-white/70">{item.text}</p>
                 </a>
               ))}
             </div>
           </section>
 
-          <section id="faq" className="scroll-mt-24 border-b border-stone-200 py-16">
+          <section id="faq" className="scroll-mt-24 border-b border-white/10 py-16">
             <SectionTitle
               eyebrow="שאלות נפוצות"
               title="מידע ברור על אלעד בלוך, בית בגלבוע והעשייה הטיפולית"
@@ -590,36 +531,36 @@ export default function App() {
 
             <div className="mt-10 grid gap-4">
               {faqItems.map((item) => (
-                <div key={item.q} className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
-                  <div className="text-xl font-bold text-stone-900">{item.q}</div>
-                  <p className="mt-3 leading-8 text-stone-600">{item.a}</p>
+                <div key={item.q} className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                  <div className="text-xl font-semibold">{item.q}</div>
+                  <p className="mt-3 leading-8 text-white/70">{item.a}</p>
                 </div>
               ))}
             </div>
           </section>
 
           <section id="contact" className="scroll-mt-24 py-16">
-            <div className="rounded-[2rem] border border-emerald-200 bg-emerald-700 p-8 lg:flex lg:items-center lg:justify-between lg:gap-8 lg:p-12 shadow-lg">
+            <div className="rounded-[2rem] border border-orange-500/20 bg-orange-500/10 p-8 lg:flex lg:items-center lg:justify-between lg:gap-8 lg:p-12">
               <div className="max-w-3xl">
-                <div className="text-sm font-medium text-emerald-200">יצירת קשר</div>
-                <h2 className="mt-3 text-3xl font-bold text-white">למידע נוסף על בית בגלבוע, שיקום, קהילה וליווי</h2>
-                <p className="mt-4 text-lg leading-8 text-emerald-50">
+                <div className="text-sm text-orange-200">יצירת קשר</div>
+                <h2 className="mt-3 text-3xl font-semibold">למידע נוסף על בית בגלבוע, שיקום, קהילה וליווי</h2>
+                <p className="mt-4 text-lg leading-8 text-white/80">
                   אזור זה יכול לשמש כעמוד יצירת קשר, עמוד למשפחות או עמוד פניות לאנשי מקצוע. כרגע הוא בנוי כדי להציג בצורה מכבדת, ברורה ויציבה את פרטי הקשר המרכזיים.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <div className="rounded-2xl bg-emerald-800/50 px-4 py-3 text-sm font-medium text-white border border-emerald-600">אלעד בלוך</div>
-                  <div className="rounded-2xl bg-emerald-800/50 px-4 py-3 text-sm font-medium text-white border border-emerald-600">מירב, הגלבוע</div>
-                  <div className="rounded-2xl bg-emerald-800/50 px-4 py-3 text-sm font-medium text-white border border-emerald-600">איש טיפול, אח ומנהל מסגרת</div>
+                  <div className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-white/85">אלעד בלוך</div>
+                  <div className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-white/85">מירב, הגלבוע</div>
+                  <div className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-white/85">איש טיפול, אח ומנהל מסגרת</div>
                 </div>
               </div>
 
-              <div className="mt-8 grid gap-4 lg:mt-0 lg:min-w-[280px]">
-                <a href="tel:0528699412" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-4 text-sm font-bold text-emerald-900 transition hover:bg-stone-100 shadow-sm">
-                  <Icon name="phone" className="h-5 w-5" />
+              <div className="mt-6 grid gap-4 lg:mt-0 lg:min-w-[280px]">
+                <a href="tel:0528699412" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-4 text-sm font-medium text-neutral-950">
+                  <Icon name="phone" className="h-4 w-4" />
                   052-8699412
                 </a>
-                <a href="https://www.kdati.org.il/magazines/0423/17-16/" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-400 bg-transparent px-6 py-4 text-sm font-bold text-white transition hover:bg-emerald-600">
-                  <Icon name="file" className="h-5 w-5" />
+                <a href="https://www.kdati.org.il/magazines/0423/17-16/" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/20 px-6 py-4 text-sm font-medium text-white">
+                  <Icon name="file" className="h-4 w-4" />
                   לכתבת עומק על בית בגלבוע
                 </a>
               </div>
