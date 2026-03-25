@@ -1,632 +1,456 @@
-import React, { useEffect, useMemo, useState } from "react";
-
-const NAV_ITEMS = [
-  { id: "home", label: "ראשי", icon: "home" },
-  { id: "about", label: "אודות", icon: "users" },
-  { id: "gilboa", label: "בית בגלבוע", icon: "heart" },
-  { id: "care", label: "תחומי עיסוק", icon: "care" },
-  { id: "articles", label: "מאמרים", icon: "book" },
-  { id: "media", label: "מקורות ומדיה", icon: "file" },
-  { id: "faq", label: "שאלות נפוצות", icon: "shield" },
-  { id: "contact", label: "יצירת קשר", icon: "mail" },
-];
-
-const sourceLinks = [
-  {
-    title: "עמודים, ביטאון הקיבוץ הדתי",
-    text: "שיחה עם אלעד בלוך על יותר מעשור של בית בגלבוע, על שיקום, הזדקנות, קהילה וליווי לאורך זמן.",
-    href: "https://www.kdati.org.il/magazines/0423/17-16/",
-  },
-  {
-    title: "mynet העמק",
-    text: "כתבה על הקמת בית בגלבוע במירב, כבית לחיים לנשים בעלות צרכים מיוחדים בתוך קהילה קיימת.",
-    href: "https://emek.mynet.co.il/local_news/article/m_217090",
-  },
-  {
-    title: "103fm",
-    text: "אייטם רדיו רלוונטי שמוסיף שכבת אזכור ציבורית סביב השם והעשייה.",
-    href: "https://103fm.maariv.co.il/programs/media.aspx?ZrqvnVq=ELEGJJ&c41t4nzVQ=EF",
-  },
-  {
-    title: "מועצה אזורית עמק המעיינות",
-    text: "עמוד מידע על מענים לאנשים עם מוגבלות באזור, שמחזק את ההקשר של שירותים, ליווי וקהילה.",
-    href: "https://emek-maianot-region.muni.il/128/",
-  },
-];
-
-const stats = [
-  { title: "טיפול", text: "ליווי רגיש, מקצועי ואנושי, בתוך חיים אמיתיים ולא רק בתוך חדר טיפולים." },
-  { title: "שיקום", text: "בניית מסלולי התפתחות, עצמאות, יציבות ושייכות לאורך זמן." },
-  { title: "קהילה", text: "חיים בתוך בית, עבודה, פנאי, יחסים ותחושת מקום אמיתית." },
-  { title: "אחריות", text: "החזקה של מציאות טיפולית מורכבת, בעקביות, בחום ובגבולות בריאים." },
-];
-
-const expertise = [
-  {
-    title: "ליווי נשים בעלות צרכים מיוחדים",
-    text: "עבודה יומיומית עם נשים הזקוקות למרחב תומך, לקצב מותאם, למסגרת יציבה ולמבט שמכבד אדם ולא רק צורך.",
-  },
-  {
-    title: "שיקום בקהילה",
-    text: "חיבור בין טיפול, סדר יום, עבודה, פנאי, יחסים, צמיחה והתנסות בחיים שיש בהם משמעות וערך.",
-  },
-  {
-    title: "ניהול בית לחיים",
-    text: "הובלת מסגרת חיה, עם צוות, משפחות, תהליכים ושינויים, מתוך אחריות מקצועית וראייה ארוכת טווח.",
-  },
-  {
-    title: "ליווי בתהליכי שינוי והתבגרות",
-    text: "התמודדות עם מצבים של שינוי צרכים, הזדקנות, שאלות סיעודיות, בריאותיות ורגשיות, באופן אחראי ומכבד.",
-  },
-  {
-    title: "עבודה עם משפחות",
-    text: "קשר רציף עם משפחות כחלק בלתי נפרד מהתהליך, מתוך הקשבה, שותפות ויצירת אמון לאורך זמן.",
-  },
-  {
-    title: "בניית סביבה מיטיבה",
-    text: "יצירת בית שיש בו קצב נכון, יציבות, מרחב, קהילה, קשר, עבודה ופנאי, ולא רק מענה פונקציונלי.",
-  },
-];
-
-const articles = [
-  {
-    title: "מהי קהילה טיפולית טובה באמת",
-    summary:
-      "קהילה טיפולית אינה רק מקום בטוח. זהו מרחב שמחזיק שגרה, שייכות, יחסים, עבודה ומשמעות. כאן אפשר להרחיב על התפיסה שמובילה את העשייה סביב בית בגלבוע.",
-  },
-  {
-    title: "כששיקום פוגש את החיים עצמם",
-    summary:
-      "תהליכי שיקום אינם מתקיימים רק בתוך תוכנית טיפול. הם מתקיימים בתוך בית, מטבח, עבודה, קהילה, קונפליקטים, צמיחה ושינויים. זהו מרחב העבודה האמיתי של ליווי משמעותי.",
-  },
-  {
-    title: "ליווי לאורך זמן, לא רק פתרון נקודתי",
-    summary:
-      "אנשים, משפחות ומסגרות משתנים עם הזמן. ליווי טוב יודע להחזיק גם התחלות חדשות, גם תקופות מורכבות, וגם שאלות של בגרות, בריאות וזהות.",
-  },
-];
-
-const faqItems = [
-  {
-    q: "מי הוא אלעד בלוך?",
-    a: "אלעד בלוך הוא איש טיפול, אח במקצועו ומנהל בית בגלבוע במירב, עם ניסיון בליווי נשים בעלות צרכים מיוחדים ובניהול מסגרת חיים תומכת בתוך קהילה.",
-  },
-  {
-    q: "מהו בית בגלבוע?",
-    a: "בית בגלבוע הוא בית לחיים לנשים בעלות צרכים מיוחדים, הפועל מתוך תפיסה קהילתית, שיקומית ואנושית, עם דגש על חיים מלאים, שייכות, עבודה, פנאי והתפתחות.",
-  },
-  {
-    q: "מה מייחד את הגישה המקצועית?",
-    a: "הגישה מחברת בין טיפול מקצועי, קהילה חיה, קצב אישי, אחריות, סדר יום ומשמעות, ולא מסתפקת בהחזקה טכנית או במענה נקודתי בלבד.",
-  },
-  {
-    q: "למי מתאים לפנות?",
-    a: "למשפחות, אנשי מקצוע, גורמי רווחה, וכל מי שמבקש להבין יותר על הגישה, על בית בגלבוע או על היבטים של ליווי ושיקום בקהילה.",
-  },
-];
-
-function Icon({ name, className = "h-4 w-4" }) {
-  const props = {
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "1.8",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    className,
-    "aria-hidden": true,
-  };
-
-  switch (name) {
-    case "home":
-      return (
-        <svg {...props}>
-          <path d="M3 10.5 12 3l9 7.5" />
-          <path d="M5 9.5V21h14V9.5" />
-        </svg>
-      );
-    case "users":
-      return (
-        <svg {...props}>
-          <path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
-          <circle cx="9.5" cy="7" r="3" />
-          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-          <path d="M16 4.13a3 3 0 0 1 0 5.74" />
-        </svg>
-      );
-    case "heart":
-      return (
-        <svg {...props}>
-          <path d="M12 21s-6.5-4.35-9-8.2C1.2 10.04 2.22 6 6.1 6c2.08 0 3.22 1.2 3.9 2.28C10.68 7.2 11.82 6 13.9 6c3.88 0 4.9 4.04 3.1 6.8C18.5 16.65 12 21 12 21Z" />
-        </svg>
-      );
-    case "care":
-      return (
-        <svg {...props}>
-          <circle cx="12" cy="12" r="9" />
-          <path d="M12 8v8" />
-          <path d="M8 12h8" />
-        </svg>
-      );
-    case "book":
-      return (
-        <svg {...props}>
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-          <path d="M6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5V5.5A2.5 2.5 0 0 1 6.5 3Z" />
-        </svg>
-      );
-    case "file":
-      return (
-        <svg {...props}>
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-          <path d="M14 2v6h6" />
-          <path d="M8 13h8" />
-          <path d="M8 17h5" />
-        </svg>
-      );
-    case "shield":
-      return (
-        <svg {...props}>
-          <path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3Z" />
-          <path d="m9.5 12 1.7 1.7 3.3-3.7" />
-        </svg>
-      );
-    case "mail":
-      return (
-        <svg {...props}>
-          <rect x="3" y="5" width="18" height="14" rx="2" />
-          <path d="m4 7 8 6 8-6" />
-        </svg>
-      );
-    case "phone":
-      return (
-        <svg {...props}>
-          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.34 1.78.66 2.63a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.45-1.23a2 2 0 0 1 2.11-.45c.85.32 1.73.54 2.63.66A2 2 0 0 1 22 16.92Z" />
-        </svg>
-      );
-    case "clock":
-      return (
-        <svg {...props}>
-          <circle cx="12" cy="12" r="9" />
-          <path d="M12 7v5l3 2" />
-        </svg>
-      );
-    case "sparkles":
-      return (
-        <svg {...props}>
-          <path d="m12 3 1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3Z" />
-          <path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z" />
-          <path d="m5 15 .8 2.2L8 18l-2.2.8L5 21l-.8-2.2L2 18l2.2-.8L5 15Z" />
-        </svg>
-      );
-    case "stethoscope":
-      return (
-        <svg {...props}>
-          <path d="M6 3v6a4 4 0 0 0 8 0V3" />
-          <path d="M10 3v6" />
-          <path d="M14 15a4 4 0 1 0 8 0v-1" />
-          <circle cx="18" cy="14" r="2" />
-          <path d="M14 9v5a4 4 0 0 0 4 4" />
-        </svg>
-      );
-    case "map":
-      return (
-        <svg {...props}>
-          <path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z" />
-          <circle cx="12" cy="10" r="2.5" />
-        </svg>
-      );
-    case "external":
-      return (
-        <svg {...props}>
-          <path d="M14 4h6v6" />
-          <path d="M10 14 20 4" />
-          <path d="M20 14v6H4V4h6" />
-        </svg>
-      );
-    default:
-      return null;
-  }
-}
-
-function SectionTitle({ eyebrow, title, text }) {
-  return (
-    <div className="max-w-3xl">
-      <div className="text-sm font-medium text-emerald-700">{eyebrow}</div>
-      <h2 className="mt-3 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">{title}</h2>
-      {text ? <p className="mt-4 text-lg leading-8 text-stone-600">{text}</p> : null}
-    </div>
-  );
-}
-
-function Card({ title, text, icon }) {
-  return (
-    <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
-      {icon ? (
-        <div className="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
-          <Icon name={icon} className="h-5 w-5" />
-        </div>
-      ) : null}
-      <div className="text-lg font-semibold text-stone-900">{title}</div>
-      <p className="mt-3 leading-8 text-stone-600">{text}</p>
-    </div>
-  );
-}
-
-// Fixed the syntax error in this component
-function SchemaScripts({ schemas }) {
-  useEffect(() => {
-    const nodes = schemas.map((schema, i) => {
-      const s = document.createElement("script");
-      s.type = "application/ld+json";
-      s.setAttribute("data-schema", `schema-${i}`);
-      s.text = JSON.stringify(schema);
-      document.head.appendChild(s);
-      return s;
-    });
-
-    return () => {
-      nodes.forEach((n) => n.remove());
-    };
-  }, [schemas]);
-
-  return null;
-}
-
-function SiteTests() {
-  useEffect(() => {
-    console.assert(Array.isArray(NAV_ITEMS) && NAV_ITEMS.length > 0, "NAV_ITEMS must not be empty");
-    console.assert(Array.isArray(sourceLinks) && sourceLinks.length >= 3, "sourceLinks should contain at least 3 items");
-    console.assert(Array.isArray(faqItems) && faqItems.length >= 3, "faqItems should contain at least 3 items");
-    console.assert(stats.every((item) => item.title && item.text), "Each stat item must include title and text");
-  }, []);
-
-  return null;
-}
-
-export default function App() {
-  const [activeTab, setActiveTab] = useState("home");
-  const baseUrl = "https://eladbloch.com";
-
-  // Added scroll listener to update active tab automatically
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = NAV_ITEMS.map((item) => document.getElementById(item.id));
-      const scrollPosition = window.scrollY + 200; // Offset for header
-
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const section = sections[i];
-        if (section && section.offsetTop <= scrollPosition) {
-          if (activeTab !== section.id) {
-            setActiveTab(section.id);
-          }
-          break;
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אלעד בלוך | איש טיפול ומנהל בית בגלבוע</title>
+    <meta name="description" content="אלעד בלוך הוא איש טיפול ומנהל בית בגלבוע במירב. עוסק בליווי נשים בעלות צרכים מיוחדים, שיקום בקהילה ובניית מסגרות חיים תומכות.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
         }
-      }
-    };
+    </script>
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [activeTab]);
+    <!-- Smooth Scrolling CSS -->
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
 
-  const personSchema = useMemo(
-    () => ({
+    <!-- Structured Data (JSON-LD) for SEO -->
+    <script type="application/ld+json">
+    {
       "@context": "https://schema.org",
       "@type": "Person",
-      "@id": `${baseUrl}/#person`,
-      name: "אלעד בלוך",
-      alternateName: "Elad Bloch",
-      url: baseUrl,
-      image: `${baseUrl}/profile.jpg`,
-      telephone: "052-8699412",
-      jobTitle: "איש טיפול, אח במקצועו ומנהל בית בגלבוע",
-      description:
-        "אלעד בלוך הוא איש טיפול, אח במקצועו ומנהל בית בגלבוע במירב. עוסק בליווי נשים בעלות צרכים מיוחדים, שיקום בקהילה ובניית מסגרות חיים תומכות.",
-      address: {
+      "@id": "https://eladbloch.com/#person",
+      "name": "אלעד בלוך",
+      "alternateName": "Elad Bloch",
+      "url": "https://eladbloch.com",
+      "telephone": "052 8699412",
+      "jobTitle": "איש טיפול ומנהל בית בגלבוע",
+      "description": "אלעד בלוך הוא איש טיפול ומנהל בית בגלבוע במירב. עוסק בליווי נשים בעלות צרכים מיוחדים, שיקום בקהילה ובניית מסגרות חיים תומכות.",
+      "address": {
         "@type": "PostalAddress",
-        addressLocality: "מירב",
-        addressRegion: "הגלבוע",
-        addressCountry: "IL",
+        "addressLocality": "מירב",
+        "addressRegion": "הגלבוע",
+        "addressCountry": "IL"
       },
-      areaServed: "ישראל",
-      knowsAbout: [
+      "areaServed": "ישראל",
+      "knowsAbout": [
         "שיקום בקהילה",
         "ליווי נשים בעלות צרכים מיוחדים",
         "קהילה טיפולית",
         "העצמה אישית",
-        "ליווי משפחות",
-      ],
-      sameAs: [
-        "https://www.kdati.org.il/magazines/0423/17-16/",
-        "https://emek.mynet.co.il/local_news/article/m_217090",
-        "https://103fm.maariv.co.il/programs/media.aspx?ZrqvnVq=ELEGJJ&c41t4nzVQ=EF"
+        "ליווי משפחות"
       ]
-    }),
-    []
-  );
-
-  const faqSchema = useMemo(
-    () => ({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "@id": `${baseUrl}/#faq`,
-      mainEntity: faqItems.map((item) => ({
-        "@type": "Question",
-        name: item.q,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: item.a,
-        },
-      })),
-    }),
-    []
-  );
-
-  const websiteSchema = useMemo(() => ({
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "@id": `${baseUrl}/#website`,
-    url: baseUrl,
-    name: "אלעד בלוך",
-    inLanguage: "he",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${baseUrl}/?q={search_term_string}`,
-      "query-input": "required name=search_term_string"
     }
-  }), []);
+    </script>
+</head>
+<body class="min-h-screen bg-stone-50 text-stone-900 font-sans">
 
-  const breadcrumbSchema = useMemo(() => ({
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "ראשי",
-        item: baseUrl
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "אלעד בלוך",
-        item: `${baseUrl}/#person`
-      }
-    ]
-  }), []);
+    <!-- Soft background accents -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-0 right-0 h-96 w-96 rounded-full bg-emerald-100/50 blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 h-[32rem] w-[32rem] rounded-full bg-stone-200/50 blur-3xl"></div>
+    </div>
 
-  return (
-    <div className="min-h-screen bg-stone-50 text-stone-900 font-sans" dir="rtl">
-      <SchemaScripts schemas={[personSchema, faqSchema, websiteSchema, breadcrumbSchema]} />
-      <SiteTests />
-
-      {/* Soft background accents instead of neon */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 h-96 w-96 rounded-full bg-emerald-100/50 blur-3xl" />
-        <div className="absolute bottom-0 left-0 h-[32rem] w-[32rem] rounded-full bg-stone-200/50 blur-3xl" />
-      </div>
-
-      <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row">
-        {/* Sidebar */}
-        <aside className="border-b border-stone-200 bg-stone-50/90 px-5 py-5 backdrop-blur lg:sticky lg:top-0 lg:h-screen lg:w-80 lg:border-b-0 lg:border-l lg:px-6 lg:py-8 z-10">
-          <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-            <div className="text-2xl font-bold text-stone-900">אלעד בלוך</div>
-            <div className="mt-2 text-sm leading-7 text-stone-600">איש טיפול, אח במקצועו ומנהל בית בגלבוע</div>
-            <div className="mt-4 flex items-center gap-2 text-sm text-emerald-700 font-medium">
-              <Icon name="map" className="h-4 w-4" />
-              <span>מירב, הגלבוע</span>
+    <div class="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row">
+        
+        <!-- Sidebar -->
+        <aside class="border-b border-stone-200 bg-stone-50/90 px-5 py-5 backdrop-blur lg:sticky lg:top-0 lg:h-screen lg:w-80 lg:border-b-0 lg:border-l lg:px-6 lg:py-8 z-20">
+            <div class="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+                <div class="text-2xl font-bold text-stone-900">אלעד בלוך</div>
+                <div class="mt-2 text-sm leading-7 text-stone-600">איש טיפול, אח במקצועו ומנהל בית בגלבוע</div>
+                <div class="mt-4 flex items-center gap-2 text-sm text-emerald-700 font-medium">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                    <span>מירב, הגלבוע</span>
+                </div>
+                <a href="tel:0528699412" class="mt-5 inline-flex items-center gap-2 rounded-2xl bg-emerald-700 px-4 py-3 text-sm font-medium text-white shadow-md shadow-emerald-700/20 transition hover:bg-emerald-800">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.34 1.78.66 2.63a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.45-1.23a2 2 0 0 1 2.11-.45c.85.32 1.73.54 2.63.66A2 2 0 0 1 22 16.92Z"/></svg>
+                    052 8699412
+                </a>
             </div>
-            <a
-              href="tel:0528699412"
-              className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-emerald-700 px-4 py-3 text-sm font-medium text-white shadow-md shadow-emerald-700/20 transition hover:bg-emerald-800"
-            >
-              <Icon name="phone" className="h-4 w-4" />
-              052-8699412
-            </a>
-          </div>
 
-          <nav className="mt-6 grid gap-2">
-            {NAV_ITEMS.map((item) => {
-              const active = activeTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setActiveTab(item.id);
-                    const el = document.getElementById(item.id);
-                    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                  }}
-                  className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-right text-sm font-medium transition ${
-                    active ? "bg-emerald-700 text-white shadow-md" : "bg-transparent text-stone-600 hover:bg-stone-200 hover:text-stone-900"
-                  }`}
-                >
-                  <Icon name={item.icon} className="h-4 w-4 shrink-0" />
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
-          </nav>
+            <nav class="mt-6 grid gap-2" id="main-nav">
+                <a href="#home" class="nav-link bg-emerald-700 text-white shadow-md flex items-center gap-3 rounded-2xl px-4 py-3 text-right text-sm font-medium transition" data-target="home">
+                    <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+                    <span>ראשי</span>
+                </a>
+                <a href="#about" class="nav-link bg-transparent text-stone-600 hover:bg-stone-200 hover:text-stone-900 flex items-center gap-3 rounded-2xl px-4 py-3 text-right text-sm font-medium transition" data-target="about">
+                    <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="3"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 4.13a3 3 0 0 1 0 5.74"/></svg>
+                    <span>אודות</span>
+                </a>
+                <a href="#gilboa" class="nav-link bg-transparent text-stone-600 hover:bg-stone-200 hover:text-stone-900 flex items-center gap-3 rounded-2xl px-4 py-3 text-right text-sm font-medium transition" data-target="gilboa">
+                    <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-4.35-9-8.2C1.2 10.04 2.22 6 6.1 6c2.08 0 3.22 1.2 3.9 2.28C10.68 7.2 11.82 6 13.9 6c3.88 0 4.9 4.04 3.1 6.8C18.5 16.65 12 21 12 21Z"/></svg>
+                    <span>בית בגלבוע</span>
+                </a>
+                <a href="#care" class="nav-link bg-transparent text-stone-600 hover:bg-stone-200 hover:text-stone-900 flex items-center gap-3 rounded-2xl px-4 py-3 text-right text-sm font-medium transition" data-target="care">
+                    <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+                    <span>תחומי עיסוק</span>
+                </a>
+                <a href="#articles" class="nav-link bg-transparent text-stone-600 hover:bg-stone-200 hover:text-stone-900 flex items-center gap-3 rounded-2xl px-4 py-3 text-right text-sm font-medium transition" data-target="articles">
+                    <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5V5.5A2.5 2.5 0 0 1 6.5 3Z"/></svg>
+                    <span>מאמרים</span>
+                </a>
+                <a href="#media" class="nav-link bg-transparent text-stone-600 hover:bg-stone-200 hover:text-stone-900 flex items-center gap-3 rounded-2xl px-4 py-3 text-right text-sm font-medium transition" data-target="media">
+                    <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>
+                    <span>מקורות ומדיה</span>
+                </a>
+                <a href="#faq" class="nav-link bg-transparent text-stone-600 hover:bg-stone-200 hover:text-stone-900 flex items-center gap-3 rounded-2xl px-4 py-3 text-right text-sm font-medium transition" data-target="faq">
+                    <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3Z"/><path d="m9.5 12 1.7 1.7 3.3-3.7"/></svg>
+                    <span>שאלות נפוצות</span>
+                </a>
+                <a href="#contact" class="nav-link bg-transparent text-stone-600 hover:bg-stone-200 hover:text-stone-900 flex items-center gap-3 rounded-2xl px-4 py-3 text-right text-sm font-medium transition" data-target="contact">
+                    <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>
+                    <span>יצירת קשר</span>
+                </a>
+            </nav>
 
-          <div className="mt-6 rounded-3xl border border-emerald-100 bg-emerald-50 p-5">
-            <div className="text-sm font-semibold text-emerald-800">מטרת האתר</div>
-            <p className="mt-3 text-sm leading-7 text-emerald-700/80">
-              לבסס נוכחות דיגיטלית ברורה, מכבדת וסמכותית סביב השם אלעד בלוך, בהקשר של טיפול, שיקום, קהילה ובית בגלבוע.
-            </p>
-          </div>
+            <div class="mt-6 rounded-3xl border border-emerald-100 bg-emerald-50 p-5">
+                <div class="text-sm font-semibold text-emerald-800">מטרת האתר</div>
+                <p class="mt-3 text-sm leading-7 text-emerald-700/80">
+                    לבסס נוכחות דיגיטלית ברורה, מכבדת וסמכותית סביב השם אלעד בלוך, בהקשר של טיפול, שיקום, קהילה ובית בגלבוע.
+                </p>
+            </div>
         </aside>
 
-        {/* Main Content */}
-        <main className="flex-1 px-6 py-8 lg:px-12 lg:py-12">
-          <section id="home" className="scroll-mt-24 border-b border-stone-200 pb-16">
-            <div className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700">
-              טיפול, שיקום, קהילה וחיים מלווים
-            </div>
-            <h1 className="mt-6 max-w-5xl text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl text-stone-900">
-              אלעד בלוך,
-              <span className="text-emerald-700"> איש טיפול, אח במקצועו ומנהל בית בגלבוע</span>
-            </h1>
-            <p className="mt-6 max-w-4xl text-lg leading-8 text-stone-600">
-              אתר זה מציג את העשייה של אלעד בלוך בהקשר של טיפול, שיקום וליווי נשים בעלות צרכים מיוחדים, מתוך תפיסה קהילתית, מקצועית ואנושית. המוקד כאן הוא בית בגלבוע, בית לחיים, תהליכי התפתחות, שייכות, עבודה, סדר יום ויציבות לאורך זמן.
-            </p>
-
-            <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-              {stats.map((item) => (
-                <Card key={item.title} title={item.title} text={item.text} icon="sparkles" />
-              ))}
-            </div>
-          </section>
-
-          <section id="about" className="scroll-mt-24 border-b border-stone-200 py-16">
-            <SectionTitle
-              eyebrow="אודות"
-              title="מקצוע טיפולי, אחריות יומיומית וראייה קהילתית רחבה"
-              text="העשייה של אלעד בלוך נולדת מתוך מפגש בין מקצוע טיפולי, מציאות חיים מורכבת, והבנה עמוקה של השאלה כיצד בונים בית, ולא רק מסגרת. זהו מרחב עבודה שיש בו קשר אנושי, אחריות, הקשבה, שגרה, התמודדות עם שינוי ויכולת להחזיק חיים שלמים ולא רק מענה נקודתי."
-            />
-
-            <div className="mt-10 grid gap-5 lg:grid-cols-3">
-              <Card
-                title="מקצוע טיפולי עם ניסיון שטח"
-                text="שילוב בין זהות של אח, הבנה טיפולית רחבה וניסיון מעשי בליווי נשים בעלות צרכים מיוחדים בתוך חיי יומיום אמיתיים."
-                icon="stethoscope"
-              />
-              <Card
-                title="תפיסה של בית ולא רק טיפול"
-                text="הדגש הוא על בניית מרחב חיים שיש בו שייכות, קצב, מערכות יחסים, עבודה, מנוחה ופנאי, ולא רק על ניהול צרכים."
-                icon="home"
-              />
-              <Card
-                title="ראייה ארוכת טווח"
-                text="ליווי שמתמודד גם עם שאלות של התבגרות, שינוי צרכים, בריאות, הזדקנות ותהליכים שמבשילים לאורך שנים."
-                icon="clock"
-              />
-            </div>
-          </section>
-
-          <section id="gilboa" className="scroll-mt-24 border-b border-stone-200 py-16">
-            <SectionTitle
-              eyebrow="בית בגלבוע"
-              title="מסגרת חיים קהילתית לנשים בעלות צרכים מיוחדים, בלב הגלבוע"
-              text="בית בגלבוע מציע מרחב חיים שבו טיפול, עבודה, קהילה, בית וסדר יום נפגשים לכדי מכלול אחד. לא מדובר רק במקום מגורים, אלא במסגרת תומכת שמבקשת לאפשר חיים מלאים, יחס אישי, התפתחות, שייכות ויציבות בתוך קהילה חיה."
-            />
-
-            <div className="mt-8 rounded-[2rem] border border-stone-200 bg-stone-100 p-8 lg:p-10 shadow-inner">
-              <p className="text-lg leading-8 text-stone-700">
-                מתוך החומרים הציבוריים על המקום עולה תפיסה שיקומית המבקשת לחבר בין עצמאות מלווה ומותאמת לבין ליווי רציף. לאורך השנים, סביב בית בגלבוע, עלו גם שאלות עומק של שינוי צרכים, הזדקנות, תמיכה רפואית, מענה רגשי וחוסן קהילתי. אלה בדיוק התחומים שבהם נדרשת נוכחות של איש טיפול שמבין מורכבות, תהליך ואנשים.
-              </p>
-              <div className="mt-8 grid gap-5 md:grid-cols-3">
-                <Card title="חיים בקהילה" text="שייכות, סדר יום, עבודה, קצב חיים ותחושת בית אמיתית." icon="users" />
-                <Card title="ליווי רציף" text="תמיכה שאינה חד פעמית, אלא תהליך ארוך, עקבי ומותאם." icon="heart" />
-                <Card title="מקצועיות עם לב" text="שילוב בין רגישות, גבולות, אחריות ויכולת להחזיק מציאות מורכבת." icon="shield" />
-              </div>
-            </div>
-          </section>
-
-          <section id="care" className="scroll-mt-24 border-b border-stone-200 py-16">
-            <SectionTitle
-              eyebrow="תחומי עיסוק"
-              title="ליווי, שיקום, סדר יום, משפחות וחיי קהילה"
-              text="המרחב המקצועי כאן רחב ומעשי. הוא כולל תמיכה ישירה באנשים, בניית מסגרות יציבות, עבודה עם משפחות וצוותים, ויכולת לחבר בין טיפול לבין החיים עצמם."
-            />
-
-            <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {expertise.map((item) => (
-                <Card key={item.title} title={item.title} text={item.text} icon="heart" />
-              ))}
-            </div>
-          </section>
-
-          <section id="articles" className="scroll-mt-24 border-b border-stone-200 py-16">
-            <SectionTitle
-              eyebrow="מאמרים"
-              title="תוכן עומק שמחזק סמכות, אמון והבנה מקצועית"
-              text="כדי לחזק נוכחות דיגיטלית ברורה, חשוב שאתר מלא יכלול גם מאמרים קצרים ומדויקים. להלן גרעין התוכן הראשוני שאפשר להרחיב בהמשך."
-            />
-
-            <div className="mt-10 grid gap-5 lg:grid-cols-3">
-              {articles.map((item) => (
-                <div key={item.title} className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm flex flex-col h-full">
-                  <div className="text-xl font-bold text-stone-900">{item.title}</div>
-                  <p className="mt-4 leading-8 text-stone-600 flex-grow">{item.summary}</p>
-                  <button className="mt-6 rounded-2xl bg-stone-100 px-4 py-2 text-sm font-medium text-stone-800 transition hover:bg-stone-200 self-start">
-                    קרא מאמר
-                  </button>
+        <!-- Main Content -->
+        <main class="flex-1 px-6 py-8 lg:px-12 lg:py-12 z-10 relative">
+            
+            <!-- Home Section -->
+            <section id="home" class="scroll-mt-24 border-b border-stone-200 pb-16 section-block">
+                <div class="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700">
+                    טיפול, שיקום, קהילה וחיים מלווים
                 </div>
-              ))}
-            </div>
-          </section>
-
-          <section id="media" className="scroll-mt-24 border-b border-stone-200 py-16">
-            <SectionTitle
-              eyebrow="מקורות ומדיה"
-              title="אזכורים חיצוניים שמחזקים אמינות, נראות וחיבור ציבורי"
-              text="ריכוז מקורות חיצוניים תומך גם בגולשים וגם במנועי חיפוש. הוא יוצר הקשר עקבי, אמין וברור סביב השם והעשייה."
-            />
-
-            <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-              {sourceLinks.map((item) => (
-                <a
-                  key={item.title}
-                  href={item.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:border-emerald-500 hover:shadow-md block h-full"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="text-lg font-bold text-stone-900">{item.title}</div>
-                    <Icon name="external" className="mt-1 h-4 w-4 shrink-0 text-emerald-600" />
-                  </div>
-                  <p className="mt-4 leading-7 text-stone-600">{item.text}</p>
-                </a>
-              ))}
-            </div>
-          </section>
-
-          <section id="faq" className="scroll-mt-24 border-b border-stone-200 py-16">
-            <SectionTitle
-              eyebrow="שאלות נפוצות"
-              title="מידע ברור על אלעד בלוך, בית בגלבוע והעשייה הטיפולית"
-              text="אזור זה מסייע גם לקוראים וגם למנועי חיפוש, ומחדד בצורה ישירה את ההקשר המקצועי הנכון."
-            />
-
-            <div className="mt-10 grid gap-4">
-              {faqItems.map((item) => (
-                <div key={item.q} className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
-                  <div className="text-xl font-bold text-stone-900">{item.q}</div>
-                  <p className="mt-3 leading-8 text-stone-600">{item.a}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section id="contact" className="scroll-mt-24 py-16">
-            <div className="rounded-[2rem] border border-emerald-200 bg-emerald-700 p-8 lg:flex lg:items-center lg:justify-between lg:gap-8 lg:p-12 shadow-lg">
-              <div className="max-w-3xl">
-                <div className="text-sm font-medium text-emerald-200">יצירת קשר</div>
-                <h2 className="mt-3 text-3xl font-bold text-white">למידע נוסף על בית בגלבוע, שיקום, קהילה וליווי</h2>
-                <p className="mt-4 text-lg leading-8 text-emerald-50">
-                  אזור זה יכול לשמש כעמוד יצירת קשר, עמוד למשפחות או עמוד פניות לאנשי מקצוע. כרגע הוא בנוי כדי להציג בצורה מכבדת, ברורה ויציבה את פרטי הקשר המרכזיים.
+                <h1 class="mt-6 max-w-5xl text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl text-stone-900">
+                    אלעד בלוך,
+                    <span class="text-emerald-700"> איש טיפול, אח במקצועו ומנהל בית בגלבוע</span>
+                </h1>
+                <p class="mt-6 max-w-4xl text-lg leading-8 text-stone-600">
+                    אתר זה מציג את העשייה של אלעד בלוך בהקשר של טיפול, שיקום וליווי נשים בעלות צרכים מיוחדים, מתוך תפיסה קהילתית, מקצועית ואנושית. המוקד כאן הוא בית בגלבוע, בית לחיים, תהליכי התפתחות, שייכות, עבודה, סדר יום ויציבות לאורך זמן.
                 </p>
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <div className="rounded-2xl bg-emerald-800/50 px-4 py-3 text-sm font-medium text-white border border-emerald-600">אלעד בלוך</div>
-                  <div className="rounded-2xl bg-emerald-800/50 px-4 py-3 text-sm font-medium text-white border border-emerald-600">מירב, הגלבוע</div>
-                  <div className="rounded-2xl bg-emerald-800/50 px-4 py-3 text-sm font-medium text-white border border-emerald-600">איש טיפול, אח ומנהל מסגרת</div>
-                </div>
-              </div>
 
-              <div className="mt-8 grid gap-4 lg:mt-0 lg:min-w-[280px]">
-                <a href="tel:0528699412" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-4 text-sm font-bold text-emerald-900 transition hover:bg-stone-100 shadow-sm">
-                  <Icon name="phone" className="h-5 w-5" />
-                  052-8699412
-                </a>
-                <a href="https://www.kdati.org.il/magazines/0423/17-16/" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-400 bg-transparent px-6 py-4 text-sm font-bold text-white transition hover:bg-emerald-600">
-                  <Icon name="file" className="h-5 w-5" />
-                  לכתבת עומק על בית בגלבוע
-                </a>
-              </div>
-            </div>
-          </section>
+                <div class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+                        <div class="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/><path d="m5 15 .8 2.2L8 18l-2.2.8L5 21l-.8-2.2L2 18l2.2-.8L5 15Z"/></svg>
+                        </div>
+                        <div class="text-lg font-semibold text-stone-900">טיפול</div>
+                        <p class="mt-3 leading-8 text-stone-600">ליווי רגיש, מקצועי ואנושי, בתוך חיים אמיתיים ולא רק בתוך חדר טיפולים.</p>
+                    </div>
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+                        <div class="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/><path d="m5 15 .8 2.2L8 18l-2.2.8L5 21l-.8-2.2L2 18l2.2-.8L5 15Z"/></svg>
+                        </div>
+                        <div class="text-lg font-semibold text-stone-900">שיקום</div>
+                        <p class="mt-3 leading-8 text-stone-600">בניית מסלולי התפתחות, עצמאות, יציבות ושייכות לאורך זמן.</p>
+                    </div>
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+                        <div class="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/><path d="m5 15 .8 2.2L8 18l-2.2.8L5 21l-.8-2.2L2 18l2.2-.8L5 15Z"/></svg>
+                        </div>
+                        <div class="text-lg font-semibold text-stone-900">קהילה</div>
+                        <p class="mt-3 leading-8 text-stone-600">חיים בתוך בית, עבודה, פנאי, יחסים ותחושת מקום אמיתית.</p>
+                    </div>
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+                        <div class="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/><path d="m5 15 .8 2.2L8 18l-2.2.8L5 21l-.8-2.2L2 18l2.2-.8L5 15Z"/></svg>
+                        </div>
+                        <div class="text-lg font-semibold text-stone-900">אחריות</div>
+                        <p class="mt-3 leading-8 text-stone-600">החזקה של מציאות טיפולית מורכבת, בעקביות, בחום ובגבולות בריאים.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About Section -->
+            <section id="about" class="scroll-mt-24 border-b border-stone-200 py-16 section-block">
+                <div class="max-w-3xl">
+                    <div class="text-sm font-medium text-emerald-700">אודות</div>
+                    <h2 class="mt-3 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">מקצוע טיפולי, אחריות יומיומית וראייה קהילתית רחבה</h2>
+                    <p class="mt-4 text-lg leading-8 text-stone-600">העשייה של אלעד בלוך נולדת מתוך מפגש בין מקצוע טיפולי, מציאות חיים מורכבת, והבנה עמוקה של השאלה כיצד בונים בית, ולא רק מסגרת. זהו מרחב עבודה שיש בו קשר אנושי, אחריות, הקשבה, שגרה, התמודדות עם שינוי ויכולת להחזיק חיים שלמים ולא רק מענה נקודתי.</p>
+                </div>
+
+                <div class="mt-10 grid gap-5 lg:grid-cols-3">
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+                        <div class="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v6a4 4 0 0 0 8 0V3"/><path d="M10 3v6"/><path d="M14 15a4 4 0 1 0 8 0v-1"/><circle cx="18" cy="14" r="2"/><path d="M14 9v5a4 4 0 0 0 4 4"/></svg>
+                        </div>
+                        <div class="text-lg font-semibold text-stone-900">מקצוע טיפולי עם ניסיון שטח</div>
+                        <p class="mt-3 leading-8 text-stone-600">שילוב בין זהות של אח, הבנה טיפולית רחבה וניסיון מעשי בליווי נשים בעלות צרכים מיוחדים בתוך חיי יומיום אמיתיים.</p>
+                    </div>
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+                        <div class="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+                        </div>
+                        <div class="text-lg font-semibold text-stone-900">תפיסה של בית ולא רק טיפול</div>
+                        <p class="mt-3 leading-8 text-stone-600">הדגש הוא על בניית מרחב חיים שיש בו שייכות, קצב, מערכות יחסים, עבודה, מנוחה ופנאי, ולא רק על ניהול צרכים.</p>
+                    </div>
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+                        <div class="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                        </div>
+                        <div class="text-lg font-semibold text-stone-900">ראייה ארוכת טווח</div>
+                        <p class="mt-3 leading-8 text-stone-600">ליווי שמתמודד גם עם שאלות של התבגרות, שינוי צרכים, בריאות, הזדקנות ותהליכים שמבשילים לאורך שנים.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Gilboa Section -->
+            <section id="gilboa" class="scroll-mt-24 border-b border-stone-200 py-16 section-block">
+                <div class="max-w-3xl">
+                    <div class="text-sm font-medium text-emerald-700">בית בגלבוע</div>
+                    <h2 class="mt-3 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">מסגרת חיים קהילתית לנשים בעלות צרכים מיוחדים, בלב הגלבוע</h2>
+                    <p class="mt-4 text-lg leading-8 text-stone-600">בית בגלבוע מציע מרחב חיים שבו טיפול, עבודה, קהילה, בית וסדר יום נפגשים לכדי מכלול אחד. לא מדובר רק במקום מגורים, אלא במסגרת תומכת שמבקשת לאפשר חיים מלאים, יחס אישי, התפתחות, שייכות ויציבות בתוך קהילה חיה.</p>
+                </div>
+
+                <div class="mt-8 rounded-[2rem] border border-stone-200 bg-stone-100 p-8 lg:p-10 shadow-inner">
+                    <p class="text-lg leading-8 text-stone-700">מתוך החומרים הציבוריים על המקום עולה תפיסה שיקומית המבקשת לחבר בין עצמאות מלווה ומותאמת לבין ליווי רציף. לאורך השנים, סביב בית בגלבוע, עלו גם שאלות עומק של שינוי צרכים, הזדקנות, תמיכה רפואית, מענה רגשי וחוסן קהילתי. אלה בדיוק התחומים שבהם נדרשת נוכחות של איש טיפול שמבין מורכבות, תהליך ואנשים.</p>
+                    <div class="mt-8 grid gap-5 md:grid-cols-3">
+                        <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+                            <div class="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="3"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 4.13a3 3 0 0 1 0 5.74"/></svg>
+                            </div>
+                            <div class="text-lg font-semibold text-stone-900">חיים בקהילה</div>
+                            <p class="mt-3 leading-8 text-stone-600">שייכות, סדר יום, עבודה, קצב חיים ותחושת בית אמיתית.</p>
+                        </div>
+                        <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+                            <div class="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-4.35-9-8.2C1.2 10.04 2.22 6 6.1 6c2.08 0 3.22 1.2 3.9 2.28C10.68 7.2 11.82 6 13.9 6c3.88 0 4.9 4.04 3.1 6.8C18.5 16.65 12 21 12 21Z"/></svg>
+                            </div>
+                            <div class="text-lg font-semibold text-stone-900">ליווי רציף</div>
+                            <p class="mt-3 leading-8 text-stone-600">תמיכה שאינה חד פעמית, אלא תהליך ארוך, עקבי ומותאם.</p>
+                        </div>
+                        <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+                            <div class="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3Z"/><path d="m9.5 12 1.7 1.7 3.3-3.7"/></svg>
+                            </div>
+                            <div class="text-lg font-semibold text-stone-900">מקצועיות עם לב</div>
+                            <p class="mt-3 leading-8 text-stone-600">שילוב בין רגישות, גבולות, אחריות ויכולת להחזיק מציאות מורכבת.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Expertise Section -->
+            <section id="care" class="scroll-mt-24 border-b border-stone-200 py-16 section-block">
+                <div class="max-w-3xl">
+                    <div class="text-sm font-medium text-emerald-700">תחומי עיסוק</div>
+                    <h2 class="mt-3 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">ליווי, שיקום, סדר יום, משפחות וחיי קהילה</h2>
+                    <p class="mt-4 text-lg leading-8 text-stone-600">המרחב המקצועי כאן רחב ומעשי. הוא כולל תמיכה ישירה באנשים, בניית מסגרות יציבות, עבודה עם משפחות וצוותים, ויכולת לחבר בין טיפול לבין החיים עצמם.</p>
+                </div>
+
+                <div class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+                        <div class="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-4.35-9-8.2C1.2 10.04 2.22 6 6.1 6c2.08 0 3.22 1.2 3.9 2.28C10.68 7.2 11.82 6 13.9 6c3.88 0 4.9 4.04 3.1 6.8C18.5 16.65 12 21 12 21Z"/></svg>
+                        </div>
+                        <div class="text-lg font-semibold text-stone-900">ליווי נשים בעלות צרכים מיוחדים</div>
+                        <p class="mt-3 leading-8 text-stone-600">עבודה יומיומית עם נשים הזקוקות למרחב תומך, לקצב מותאם, למסגרת יציבה ולמבט שמכבד אדם ולא רק צורך.</p>
+                    </div>
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+                        <div class="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-4.35-9-8.2C1.2 10.04 2.22 6 6.1 6c2.08 0 3.22 1.2 3.9 2.28C10.68 7.2 11.82 6 13.9 6c3.88 0 4.9 4.04 3.1 6.8C18.5 16.65 12 21 12 21Z"/></svg>
+                        </div>
+                        <div class="text-lg font-semibold text-stone-900">שיקום בקהילה</div>
+                        <p class="mt-3 leading-8 text-stone-600">חיבור בין טיפול, סדר יום, עבודה, פנאי, יחסים, צמיחה והתנסות בחיים שיש בהם משמעות וערך.</p>
+                    </div>
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+                        <div class="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-4.35-9-8.2C1.2 10.04 2.22 6 6.1 6c2.08 0 3.22 1.2 3.9 2.28C10.68 7.2 11.82 6 13.9 6c3.88 0 4.9 4.04 3.1 6.8C18.5 16.65 12 21 12 21Z"/></svg>
+                        </div>
+                        <div class="text-lg font-semibold text-stone-900">ניהול בית לחיים</div>
+                        <p class="mt-3 leading-8 text-stone-600">הובלת מסגרת חיה, עם צוות, משפחות, תהליכים ושינויים, מתוך אחריות מקצועית וראייה ארוכת טווח.</p>
+                    </div>
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+                        <div class="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-4.35-9-8.2C1.2 10.04 2.22 6 6.1 6c2.08 0 3.22 1.2 3.9 2.28C10.68 7.2 11.82 6 13.9 6c3.88 0 4.9 4.04 3.1 6.8C18.5 16.65 12 21 12 21Z"/></svg>
+                        </div>
+                        <div class="text-lg font-semibold text-stone-900">ליווי בתהליכי שינוי והתבגרות</div>
+                        <p class="mt-3 leading-8 text-stone-600">התמודדות עם מצבים של שינוי צרכים, הזדקנות, שאלות סיעודיות, בריאותיות ורגשיות, באופן אחראי ומכבד.</p>
+                    </div>
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+                        <div class="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-4.35-9-8.2C1.2 10.04 2.22 6 6.1 6c2.08 0 3.22 1.2 3.9 2.28C10.68 7.2 11.82 6 13.9 6c3.88 0 4.9 4.04 3.1 6.8C18.5 16.65 12 21 12 21Z"/></svg>
+                        </div>
+                        <div class="text-lg font-semibold text-stone-900">עבודה עם משפחות</div>
+                        <p class="mt-3 leading-8 text-stone-600">קשר רציף עם משפחות כחלק בלתי נפרד מהתהליך, מתוך הקשבה, שותפות ויצירת אמון לאורך זמן.</p>
+                    </div>
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md">
+                        <div class="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-4.35-9-8.2C1.2 10.04 2.22 6 6.1 6c2.08 0 3.22 1.2 3.9 2.28C10.68 7.2 11.82 6 13.9 6c3.88 0 4.9 4.04 3.1 6.8C18.5 16.65 12 21 12 21Z"/></svg>
+                        </div>
+                        <div class="text-lg font-semibold text-stone-900">בניית סביבה מיטיבה</div>
+                        <p class="mt-3 leading-8 text-stone-600">יצירת בית שיש בו קצב נכון, יציבות, מרחב, קהילה, קשר, עבודה ופנאי, ולא רק מענה פונקציונלי.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Articles Section -->
+            <section id="articles" class="scroll-mt-24 border-b border-stone-200 py-16 section-block">
+                <div class="max-w-3xl">
+                    <div class="text-sm font-medium text-emerald-700">מאמרים</div>
+                    <h2 class="mt-3 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">תוכן עומק שמחזק סמכות, אמון והבנה מקצועית</h2>
+                    <p class="mt-4 text-lg leading-8 text-stone-600">מחשבות, תובנות ונקודות מבט מקצועיות על עולם השיקום, הטיפול והחיים בקהילה. קריאה מעמיקה המאפשרת להכיר את תפיסת העולם שלנו מקרוב.</p>
+                </div>
+
+                <div class="mt-10 grid gap-5 lg:grid-cols-3">
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm flex flex-col h-full">
+                        <div class="text-xl font-bold text-stone-900">מהי קהילה טיפולית טובה באמת</div>
+                        <p class="mt-4 leading-8 text-stone-600 flex-grow">קהילה טיפולית אינה רק מקום בטוח. זהו מרחב שמחזיק שגרה, שייכות, יחסים, עבודה ומשמעות. כאן אפשר להרחיב על התפיסה שמובילה את העשייה סביב בית בגלבוע.</p>
+                        <button class="mt-6 rounded-2xl bg-stone-100 px-4 py-2 text-sm font-medium text-stone-800 transition hover:bg-stone-200 self-start">קרא מאמר</button>
+                    </div>
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm flex flex-col h-full">
+                        <div class="text-xl font-bold text-stone-900">כששיקום פוגש את החיים עצמם</div>
+                        <p class="mt-4 leading-8 text-stone-600 flex-grow">תהליכי שיקום אינם מתקיימים רק בתוך תוכנית טיפול. הם מתקיימים בתוך בית, מטבח, עבודה, קהילה, קונפליקטים, צמיחה ושינויים. זהו מרחב העבודה האמיתי של ליווי משמעותי.</p>
+                        <button class="mt-6 rounded-2xl bg-stone-100 px-4 py-2 text-sm font-medium text-stone-800 transition hover:bg-stone-200 self-start">קרא מאמר</button>
+                    </div>
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm flex flex-col h-full">
+                        <div class="text-xl font-bold text-stone-900">ליווי לאורך זמן, לא רק פתרון נקודתי</div>
+                        <p class="mt-4 leading-8 text-stone-600 flex-grow">אנשים, משפחות ומסגרות משתנים עם הזמן. ליווי טוב יודע להחזיק גם התחלות חדשות, גם תקופות מורכבות, וגם שאלות של בגרות, בריאות וזהות.</p>
+                        <button class="mt-6 rounded-2xl bg-stone-100 px-4 py-2 text-sm font-medium text-stone-800 transition hover:bg-stone-200 self-start">קרא מאמר</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Media Section -->
+            <section id="media" class="scroll-mt-24 border-b border-stone-200 py-16 section-block">
+                <div class="max-w-3xl">
+                    <div class="text-sm font-medium text-emerald-700">מקורות ומדיה</div>
+                    <h2 class="mt-3 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">אזכורים חיצוניים שמחזקים אמינות, נראות וחיבור ציבורי</h2>
+                    <p class="mt-4 text-lg leading-8 text-stone-600">אספנו עבורכם פרסומים מהתקשורת, המספרים את סיפורו של בית בגלבוע ומאפשרים הצצה רחבה יותר לעשייה שלנו לאורך השנים.</p>
+                </div>
+
+                <div class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+                    <a href="https://www.kdati.org.il/magazines/0423/17-16/" target="_blank" rel="noreferrer" class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:border-emerald-500 hover:shadow-md block h-full">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="text-lg font-bold text-stone-900">עמודים, ביטאון הקיבוץ הדתי</div>
+                            <svg class="mt-1 h-4 w-4 shrink-0 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M10 14 20 4"/><path d="M20 14v6H4V4h6"/></svg>
+                        </div>
+                        <p class="mt-4 leading-7 text-stone-600">שיחה עם אלעד בלוך על יותר מעשור של בית בגלבוע, על שיקום, הזדקנות, קהילה וליווי לאורך זמן.</p>
+                    </a>
+                    <a href="https://emek.mynet.co.il/local_news/article/m_217090" target="_blank" rel="noreferrer" class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:border-emerald-500 hover:shadow-md block h-full">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="text-lg font-bold text-stone-900">mynet העמק</div>
+                            <svg class="mt-1 h-4 w-4 shrink-0 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M10 14 20 4"/><path d="M20 14v6H4V4h6"/></svg>
+                        </div>
+                        <p class="mt-4 leading-7 text-stone-600">כתבה על הקמת בית בגלבוע במירב, כבית לחיים לנשים בעלות צרכים מיוחדים בתוך קהילה קיימת.</p>
+                    </a>
+                    <a href="https://103fm.maariv.co.il/programs/media.aspx?ZrqvnVq=ELEGJJ&c41t4nzVQ=EF" target="_blank" rel="noreferrer" class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:border-emerald-500 hover:shadow-md block h-full">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="text-lg font-bold text-stone-900">103fm</div>
+                            <svg class="mt-1 h-4 w-4 shrink-0 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M10 14 20 4"/><path d="M20 14v6H4V4h6"/></svg>
+                        </div>
+                        <p class="mt-4 leading-7 text-stone-600">אייטם רדיו רלוונטי שמוסיף שכבת אזכור ציבורית סביב השם והעשייה.</p>
+                    </a>
+                    <a href="https://emek-maianot-region.muni.il/128/" target="_blank" rel="noreferrer" class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:border-emerald-500 hover:shadow-md block h-full">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="text-lg font-bold text-stone-900">מועצה אזורית עמק המעיינות</div>
+                            <svg class="mt-1 h-4 w-4 shrink-0 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M10 14 20 4"/><path d="M20 14v6H4V4h6"/></svg>
+                        </div>
+                        <p class="mt-4 leading-7 text-stone-600">עמוד מידע על מענים לאנשים עם מוגבלות באזור, שמחזק את ההקשר של שירותים, ליווי וקהילה.</p>
+                    </a>
+                </div>
+            </section>
+
+            <!-- FAQ Section -->
+            <section id="faq" class="scroll-mt-24 border-b border-stone-200 py-16 section-block">
+                <div class="max-w-3xl">
+                    <div class="text-sm font-medium text-emerald-700">שאלות נפוצות</div>
+                    <h2 class="mt-3 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">מידע ברור על אלעד בלוך, בית בגלבוע והעשייה הטיפולית</h2>
+                    <p class="mt-4 text-lg leading-8 text-stone-600">ריכזנו עבורכם קבוצה של שאלות מרכזיות שעולות בדרך כלל, כדי לעזור לכם להבין טוב יותר את הגישה הטיפולית ואת אופי המקום.</p>
+                </div>
+
+                <div class="mt-10 grid gap-4">
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
+                        <div class="text-xl font-bold text-stone-900">מי הוא אלעד בלוך?</div>
+                        <p class="mt-3 leading-8 text-stone-600">אלעד בלוך הוא איש טיפול, אח במקצועו ומנהל בית בגלבוע במירב, עם ניסיון בליווי נשים בעלות צרכים מיוחדים ובניהול מסגרת חיים תומכת בתוך קהילה.</p>
+                    </div>
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
+                        <div class="text-xl font-bold text-stone-900">מהו בית בגלבוע?</div>
+                        <p class="mt-3 leading-8 text-stone-600">בית בגלבוע הוא בית לחיים לנשים בעלות צרכים מיוחדים, הפועל מתוך תפיסה קהילתית, שיקומית ואנושית, עם דגש על חיים מלאים, שייכות, עבודה, פנאי והתפתחות.</p>
+                    </div>
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
+                        <div class="text-xl font-bold text-stone-900">מה מייחד את הגישה המקצועית?</div>
+                        <p class="mt-3 leading-8 text-stone-600">הגישה מחברת בין טיפול מקצועי, קהילה חיה, קצב אישי, אחריות, סדר יום ומשמעות, ולא מסתפקת בהחזקה טכנית או במענה נקודתי בלבד.</p>
+                    </div>
+                    <div class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
+                        <div class="text-xl font-bold text-stone-900">למי מתאים לפנות?</div>
+                        <p class="mt-3 leading-8 text-stone-600">למשפחות, אנשי מקצוע, גורמי רווחה, וכל מי שמבקש להבין יותר על הגישה, על בית בגלבוע או על היבטים של ליווי ושיקום בקהילה.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Section -->
+            <section id="contact" class="scroll-mt-24 py-16 section-block">
+                <div class="rounded-[2rem] border border-emerald-200 bg-emerald-700 p-8 lg:flex lg:items-center lg:justify-between lg:gap-8 lg:p-12 shadow-lg">
+                    <div class="max-w-3xl">
+                        <div class="text-sm font-medium text-emerald-200">יצירת קשר</div>
+                        <h2 class="mt-3 text-3xl font-bold text-white">למידע נוסף על בית בגלבוע, שיקום, קהילה וליווי</h2>
+                        <p class="mt-4 text-lg leading-8 text-emerald-50">
+                            אנו מזמינים אתכם לפנות אלינו לכל שאלה, התייעצות או חשיבה משותפת. בין אם אתם משפחות המחפשות מענה או אנשי מקצוע בתחום, הדלת שלנו פתוחה.
+                        </p>
+                        <div class="mt-6 flex flex-wrap gap-3">
+                            <div class="rounded-2xl bg-emerald-800/50 px-4 py-3 text-sm font-medium text-white border border-emerald-600">אלעד בלוך</div>
+                            <div class="rounded-2xl bg-emerald-800/50 px-4 py-3 text-sm font-medium text-white border border-emerald-600">מירב, הגלבוע</div>
+                            <div class="rounded-2xl bg-emerald-800/50 px-4 py-3 text-sm font-medium text-white border border-emerald-600">איש טיפול, אח ומנהל מסגרת</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 grid gap-4 lg:mt-0 lg:min-w-[280px]">
+                        <a href="tel:0528699412" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-4 text-sm font-bold text-emerald-900 transition hover:bg-stone-100 shadow-sm">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.34 1.78.66 2.63a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.45-1.23a2 2 0 0 1 2.11-.45c.85.32 1.73.54 2.63.66A2 2 0 0 1 22 16.92Z"/></svg>
+                            052 8699412
+                        </a>
+                        <a href="https://www.kdati.org.il/magazines/0423/17-16/" target="_blank" rel="noreferrer" class="inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-400 bg-transparent px-6 py-4 text-sm font-bold text-white transition hover:bg-emerald-600">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>
+                            לכתבת עומק על בית בגלבוע
+                        </a>
+                    </div>
+                </div>
+            </section>
         </main>
-      </div>
     </div>
-  );
-}
+
+    <!-- Navigation Scroll Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.section-block');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    // Adjust offset to trigger active state earlier while scrolling down
+                    if (scrollY >= sectionTop - 250) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    // Reset all links
+                    link.classList.remove('bg-emerald-700', 'text-white', 'shadow-md');
+                    link.classList.add('bg-transparent', 'text-stone-600');
+                    
+                    // Highlight the active link
+                    if (link.dataset.target === current) {
+                        link.classList.remove('bg-transparent', 'text-stone-600');
+                        link.classList.add('bg-emerald-700', 'text-white', 'shadow-md');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
